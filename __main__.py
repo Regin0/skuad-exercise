@@ -1,6 +1,8 @@
 import requests
 import shutil
 import os
+import sys
+import tempfile
 
 def download_by_url(url: str, output: str):
     """
@@ -23,6 +25,8 @@ def download(output_directory: str, date: str):
 
     download_by_url(url, output)
 
+    return output
+
 
 import csv
 from pprint import pprint
@@ -39,7 +43,7 @@ fundos = {}
 
 def calculate_fields(date: str, file_path: str, cnpj_list: list = []):
 
-    with open('inf_diario_fi_201701 copy.csv') as f:
+    with open(file_path) as f:
         reader = csv.reader(f, delimiter=';')
         header = next(reader)
 
@@ -86,5 +90,15 @@ def calculate_fields(date: str, file_path: str, cnpj_list: list = []):
 
         pprint(fundos[key])
 
-download('.','201703')
-calculate_fields('201703','D:\\Python\\skuad-exercicio\\inf_diario_fi_201703.csv')
+if __name__ == '__main__':
+    if len(sys.argv) <= 1:
+        print('Você esqueceu de passar o ano e o mês')
+        exit(1)
+
+    path = download(tempfile.gettempdir(), sys.argv[1])
+    
+    if len(sys.argv) <= 2:
+        calculate_fields(sys.argv[1],path)
+
+    else:
+        calculate_fields(sys.argv[1],path, sys.argv[2])
